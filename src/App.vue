@@ -1,28 +1,44 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1 class="main-screen__title">Configuration creation</h1>
+    <Network />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import Network from '@/components/Network.vue'
 export default {
   name: 'App',
-  components: {
-    HelloWorld
-  }
+  components: { Network },
 }
 </script>
 
 <style lang="scss">
+@function rem($px) {
+  @return ($px / 16px) + rem;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'satoshi', sans-serif;
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  background: rgba(245, 245, 248, 1);
+  padding-top: rem(100px);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.main-screen__title {
+  font-size: rem(40px);
+  line-height: rem(48px);
+  font-weight: 700;
+  color: #14121f;
+  margin-bottom: rem(31px);
 }
 </style>
