@@ -1,10 +1,11 @@
 <template>
   <div class="main-wrapper">
-    <form @submit.prevent="downloadJSON" class="main-wrapper__form">
+    <form class="main-wrapper__form">
       <CustomTabs
         :tabs="customTabs"
         @getDataTabs="getDataTabs"
         :dataNeeded="true"
+        ref="validation1"
       />
       <template v-if="selectedTab === 'Wi-Fi'">
         <CustomInput
@@ -12,12 +13,15 @@
           :defaultErrorText="'Network name (SSID) is required'"
           v-model="form.networkName"
           @getData="getData"
+          ref="validation2"
         />
         <SearchSelect
           :optionsCount="authentificationMethods"
           :search="false"
           :defaultText="'Authentification'"
+          :defaultErrorText="'Authentification is required'"
           @getData="getData"
+          ref="validation3"
         />
         <CustomInput
           v-if="form.Authentification == 'Basic (WPA2 Personal)'"
@@ -25,13 +29,16 @@
           :defaultErrorText="'Password is required'"
           :hidden="true"
           @getData="getData"
+          ref="validation4"
         />
         <SearchSelect
           v-if="form.Authentification == 'Enterprise (WPA2 Enterprise)'"
           :optionsCount="security"
           :search="false"
           :defaultText="'Security'"
+          :defaultErrorText="'Security is required'"
           @getData="getData"
+          ref="validation5"
         />
         <template
           v-if="
@@ -41,31 +48,36 @@
         >
           <CustomInput
             :placeholderText="'CA Certificates'"
-            :defaultErrorText="'Password is required'"
+            :defaultErrorText="'CA Certificates is required'"
             @getData="getData"
             :file="true"
+            ref="validation6"
           />
           <CustomInput
             :placeholderText="'User Idenity'"
-            :defaultErrorText="'Password is required'"
+            :defaultErrorText="'User Idenity is required'"
             @getData="getData"
+            ref="validation7"
           />
           <CustomInput
             :placeholderText="'User Private Key'"
-            :defaultErrorText="'Password is required'"
+            :defaultErrorText="'User Private Key is required'"
             @getData="getData"
             :file="true"
+            ref="validation8"
           />
           <CustomInput
             :placeholderText="'User Private Key Password'"
-            :defaultErrorText="'Password is required'"
+            :defaultErrorText="'User Private Key Password is required'"
             @getData="getData"
+            ref="validation9"
           />
           <CustomInput
             :placeholderText="'User Certificate'"
-            :defaultErrorText="'Password is required'"
+            :defaultErrorText="'User Certificate is required'"
             @getData="getData"
             :file="true"
+            ref="validation10"
           />
         </template>
         <template
@@ -76,31 +88,39 @@
         >
           <CustomInput
             :placeholderText="'CA Certificates'"
-            :defaultErrorText="'Password is required'"
+            :defaultErrorText="'CA Certificates is required'"
             @getData="getData"
             :file="true"
+            ref="validation11"
           />
           <CustomInput
             :placeholderText="'User Idenity'"
-            :defaultErrorText="'Password is required'"
+            :defaultErrorText="'User Idenity is required'"
             @getData="getData"
+            ref="validation12"
           />
           <CustomInput
             :placeholderText="'User Password'"
-            :defaultErrorText="'Password is required'"
+            :defaultErrorText="'User Password is required'"
             :hidden="true"
             @getData="getData"
+            ref="validation13"
           />
         </template>
       </template>
       <SearchSelect
         :optionsCount="timeZone"
-        :search="false"
+        :search="true"
+        :defaultValue="{ name: guestedTimezone }"
         :defaultText="'Time zone'"
+        :defaultErrorText="'Time zone is required'"
         @getData="getData"
+        ref="validation14"
       />
-      <AdvancedSettings />
-      <div class="main-btn">Generate configuration</div>
+      <AdvancedSettings ref="advancedSettings" />
+      <button type="button" class="main-btn" @click="downloadJSON">
+        Generate configuration
+      </button>
       <div class="preview-btn">Preview configuration</div>
     </form>
   </div>
@@ -111,6 +131,7 @@ import CustomInput from '@/components/form/CustomInput.vue'
 import CustomTabs from '@/components/form/CustomTabs.vue'
 import SearchSelect from '@/components/form/SearchSelect.vue'
 import AdvancedSettings from '@/components/AdvancedSettings.vue'
+import moment from 'moment-timezone'
 export default {
   name: 'Network',
   components: { CustomInput, CustomTabs, SearchSelect, AdvancedSettings },
@@ -143,17 +164,51 @@ export default {
           name: 'PEAP',
         },
       ],
-      timeZone: [
-        {
-          name: 'UTC+1',
-        },
-        {
-          name: 'UTC+2',
-        },
-      ],
+      timeZone: [],
+      guestedTimezone: '',
     }
   },
   methods: {
+    downloadJSON() {
+      this.checkAllValidations()
+    },
+    checkAllValidations() {
+      this.validationCount = 0
+      const validations = [
+        this.$refs.validation1,
+        this.$refs.validation2,
+        this.$refs.validation3,
+        this.$refs.validation4,
+        this.$refs.validation5,
+        this.$refs.validation6,
+        this.$refs.validation7,
+        this.$refs.validation8,
+        this.$refs.validation9,
+        this.$refs.validation10,
+        this.$refs.validation11,
+        this.$refs.validation12,
+        this.$refs.validation13,
+        this.$refs.validation14,
+      ]
+      let visibleValidations = 0
+      validations.forEach((item) => {
+        if (item && item.$el) {
+          visibleValidations++
+          item.checkValidation()
+        } else {
+          return
+        }
+        if (item.checkValidation()) {
+          this.validationCount++
+        }
+      })
+      this.$refs.advancedSettings.checkAllValidations()
+      console.log(this.validationCount, 'validations of', visibleValidations)
+      if (this.validationCount === visibleValidations) {
+        console.log('validations passed')
+        return true
+      }
+    },
     getData(defaultValue, selectedValue) {
       this.form[defaultValue] = selectedValue
       console.log(this.form)
@@ -163,12 +218,41 @@ export default {
       console.log(this.selectedTab)
     },
   },
+  mounted() {
+    this.guestedTimezone = moment.tz.guess()
+    this.timeZone = moment.tz.names().map((name) => ({ name }))
+  },
 }
 </script>
 
 <style lang="scss">
 @function rem($px) {
   @return ($px / 16px) + rem;
+}
+
+.error-message {
+  color: #d42b2b;
+  font-size: rem(13px);
+  line-height: rem(16px);
+  margin-top: rem(5px);
+  position: relative;
+  margin-left: rem(18px);
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  &::before {
+    position: absolute;
+    content: url('@/assets/img/warning.svg');
+    font-size: rem(15px);
+    line-height: rem(18px);
+    font-weight: 500;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: rem(-18px);
+    color: #d42b2b;
+    bottom: -10%;
+  }
 }
 
 .main-wrapper {
@@ -203,6 +287,7 @@ export default {
       cursor: pointer;
       transition: all 0.3s ease;
       width: 100%;
+      border: 1px solid transparent;
       &:hover {
         opacity: 0.8;
       }

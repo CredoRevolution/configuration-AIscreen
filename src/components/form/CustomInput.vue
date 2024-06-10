@@ -252,7 +252,8 @@ export default {
     gap: rem(12px);
     align-items: center;
     justify-content: space-between;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    row-gap: 0;
   }
   .deletable {
     width: rem(52px);
@@ -298,7 +299,7 @@ export default {
       cursor: pointer;
     }
     &.deletable {
-      width: 100%;
+      width: 89%;
     }
     &.password {
     }

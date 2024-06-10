@@ -67,6 +67,10 @@ export default {
       default: true,
       required: false,
     },
+    defaultValue: {
+      type: Object,
+      required: false,
+    },
   },
   validations: {
     value: {
@@ -117,6 +121,13 @@ export default {
   mounted() {
     this.resetValidation()
     this.checkState()
+    setTimeout(() => {
+      if (this.defaultValue) {
+        this.value = this.defaultValue
+        this.checkLabel()
+        this.showValue = true
+      }
+    }, 1000)
   },
 }
 </script>

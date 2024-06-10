@@ -17,19 +17,23 @@
         <SearchSelect
           :optionsCount="Options"
           :defaultText="'Option'"
+          :defaultErrorText="'Option is required'"
           @getData="getData"
+          ref="validation1"
         />
         <CustomInput
           v-if="form.Option === 'Manual (Static IP)'"
           :placeholderText="'IP Address (CIDR Format)'"
           :defaultErrorText="'IP Address (CIDR Format) is required'"
           @getData="getData"
+          ref="validation2"
         />
         <CustomInput
           v-if="form.Option === 'Manual (Static IP)'"
           :placeholderText="'Gateway'"
           :defaultErrorText="'Gateway is required'"
           @getData="getData"
+          ref="validation3"
         />
       </template>
       <template v-if="selectedTab === 'DNS'">
@@ -40,6 +44,7 @@
           :defaultErrorText="'Server IP Address is required'"
           @getData="getData"
           deletable
+          ref="validation4"
         />
         <div class="dns-btn" @click="serverIPAdressAmount++">
           Add more
@@ -52,11 +57,13 @@
             :placeholderText="'Host'"
             :defaultErrorText="'Host is required'"
             @getData="getData"
+            ref="validation5"
           />
           <CustomInput
             :placeholderText="'Port'"
             :defaultErrorText="'Port is required'"
             @getData="getData"
+            ref="validation6"
           />
         </div>
       </template>
@@ -68,6 +75,7 @@
           :defaultErrorText="'NTP is required'"
           @getData="getData"
           deletable
+          ref="validation7"
         />
         <div class="dns-btn" @click="NTPAmount++">
           Add more
@@ -83,6 +91,7 @@
           @getData="getData"
           deletable
           :file="true"
+          ref="validation8"
         />
         <div class="dns-btn" @click="SitesCertificatesAmount++">
           Add more
@@ -140,6 +149,46 @@ export default {
       if (defaultValue && !selectedValue) {
         this.form[defaultValue] = ''
         console.log(this.form)
+      }
+    },
+    checkAllValidations() {
+      this.validationCount = 0
+      const validations = [
+        this.$refs.validation1,
+        this.$refs.validation2,
+        this.$refs.validation3,
+        this.$refs.validation4,
+        this.$refs.validation5,
+        this.$refs.validation6,
+        this.$refs.validation7,
+        this.$refs.validation8,
+      ]
+      let visibleValidations = 0
+      validations.forEach((item) => {
+        if (Array.isArray(item)) {
+          item.forEach((validation) => {
+            if (validation && validation.$el) {
+              visibleValidations++
+              validation.checkValidation()
+            } else {
+              return
+            }
+            if (validation.checkValidation()) {
+              this.validationCount++
+            }
+          })
+        } else if (item && item.$el) {
+          visibleValidations++
+          item.checkValidation()
+          if (item.checkValidation()) {
+            this.validationCount++
+          }
+        }
+      })
+      console.log(this.validationCount, 'validations of', visibleValidations)
+      if (this.validationCount === visibleValidations) {
+        console.log('validations passed advanced')
+        return true
       }
     },
   },
