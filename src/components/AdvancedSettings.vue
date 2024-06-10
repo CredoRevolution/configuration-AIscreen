@@ -1,6 +1,10 @@
 <template>
   <div class="advanced-wrapper">
-    <div class="advanced-btn" @click="showAdvanced" ref="advancedSettings">
+    <div
+      :class="['advanced-btn', active ? 'active' : '']"
+      @click="showAdvanced"
+      ref="advancedSettings"
+    >
       Advanced
     </div>
     <div class="advanced-settings" v-if="active">
@@ -28,6 +32,63 @@
           @getData="getData"
         />
       </template>
+      <template v-if="selectedTab === 'DNS'">
+        <CustomInput
+          v-for="(adress, index) in serverIPAdressAmount"
+          :key="index"
+          :placeholderText="'Server IP Address'"
+          :defaultErrorText="'Server IP Address is required'"
+          @getData="getData"
+          deletable
+        />
+        <div class="dns-btn" @click="serverIPAdressAmount++">
+          Add more
+          <img :src="require('@/assets/img/add.svg')" alt="add more" />
+        </div>
+      </template>
+      <template v-if="selectedTab === 'Proxy'">
+        <div class="proxy-wrapper">
+          <CustomInput
+            :placeholderText="'Host'"
+            :defaultErrorText="'Host is required'"
+            @getData="getData"
+          />
+          <CustomInput
+            :placeholderText="'Port'"
+            :defaultErrorText="'Port is required'"
+            @getData="getData"
+          />
+        </div>
+      </template>
+      <template v-if="selectedTab === 'NTP'">
+        <CustomInput
+          v-for="(adress, index) in NTPAmount"
+          :key="index"
+          :placeholderText="'NTP'"
+          :defaultErrorText="'NTP is required'"
+          @getData="getData"
+          deletable
+        />
+        <div class="dns-btn" @click="NTPAmount++">
+          Add more
+          <img :src="require('@/assets/img/add.svg')" alt="add more" />
+        </div>
+      </template>
+      <template v-if="selectedTab === 'Trusted Site’s Certificates'">
+        <CustomInput
+          v-for="(adress, index) in SitesCertificatesAmount"
+          :key="index"
+          :placeholderText="'Deploy trusted site’s certificates'"
+          :defaultErrorText="'Trusted site’s certificates is required'"
+          @getData="getData"
+          deletable
+          :file="true"
+        />
+        <div class="dns-btn" @click="SitesCertificatesAmount++">
+          Add more
+          <img :src="require('@/assets/img/add.svg')" alt="add more" />
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -53,13 +114,15 @@ export default {
       form: {
         Option: '',
       },
+      serverIPAdressAmount: 1,
+      NTPAmount: 1,
+      SitesCertificatesAmount: 1,
     }
   },
   components: { CustomTabs, SearchSelect, CustomInput },
   methods: {
     showAdvanced() {
       if (this.$refs.advancedSettings) {
-        this.$refs.advancedSettings.classList.toggle('active')
         this.active = !this.active
       }
     },
@@ -88,7 +151,7 @@ export default {
   @return ($px / 16px) + rem;
 }
 .advanced-btn {
-  margin: rem(17px) 0 rem(34px) 0;
+  margin: rem(17px) 0 rem(17px) 0;
   font-size: rem(28px);
   line-height: rem(33px);
   font-weight: 700;
@@ -108,8 +171,9 @@ export default {
   }
   &.active {
     color: rgba(20, 18, 31, 1);
+    margin-bottom: rem(34px);
     &::after {
-      transform: rotate(360deg);
+      // transform: rotateX(360deg);
       content: url(@/assets/img/advanced-active.svg);
       transition: all 0.3s ease;
     }
@@ -119,5 +183,37 @@ export default {
   display: flex;
   flex-direction: column;
   gap: rem(17px);
+}
+.dns-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: rem(10px);
+  font-size: rem(19px);
+  line-height: rem(23px);
+  font-weight: 700;
+  color: rgba(0, 113, 226, 1);
+  cursor: pointer;
+  font-family: 'satoshi', sans-serif;
+  img {
+    width: rem(20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+.proxy-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: rem(12px);
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  align-items: center;
+  .input-wrapper {
+    &:nth-child(1) {
+      width: 80%;
+    }
+  }
 }
 </style>

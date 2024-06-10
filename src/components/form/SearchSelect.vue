@@ -7,23 +7,20 @@
       {{ defaultText }}</label
     >
     <multiselect
-      name="select"
-      v-model="value"
       :options="optionsCount"
       :custom-label="selectCountry"
       :value="value"
-      placeholder=""
       :allowEmpty="false"
       :searchable="search"
+      :class="{ error: $v.value && $v.value.$error, showValue }"
+      placeholder=""
       label="name"
+      name="select"
+      v-model="value"
       track-by="name"
       @select="checkState"
       @open="active = true"
       @close="checkLabel"
-      :class="[
-        { error: $v.value && $v.value.$error },
-        { showValue: showValue },
-      ]"
     ></multiselect>
     <p v-if="showError && !$v.value.mustBeSelected" class="error-message">
       {{ defaultErrorText }}
@@ -341,24 +338,25 @@ export default {
   }
 }
 
-@media (max-height: 900px) {
-  .select-wrapper {
-    .multiselect {
-      .multiselect__tags {
-        padding: rem(12px);
-      }
-      .multiselect__select {
-        &::before {
-          width: rem(38px);
-          height: rem(38px);
-        }
-      }
-      &::after {
-        top: rem(4px);
-        width: rem(38px);
-        height: rem(38px);
-      }
-    }
-  }
-}
+// @media (max-height: 900px) {
+//   .select-wrapper {
+//     .multiselect {
+//       .multiselect__tags {
+//         padding: rem(12px);
+//       }
+//       .multiselect__select {
+//         &::before {
+//           width: rem(38px);
+//           height: rem(38px);
+//         }
+//       }
+//       &::after {
+//         top: rem(4px);
+//         width: rem(38px);
+//         height: rem(38px);
+//       }
+//     }
+//   }
+// }
+//
 </style>

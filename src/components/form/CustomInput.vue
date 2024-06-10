@@ -2,30 +2,46 @@
   <div
     :class="[
       'input-wrapper',
-      active ? 'active' : '',
-      hidden ? 'password' : '',
-      file ? 'file' : '',
+      {
+        active,
+        file,
+        deletable,
+      },
     ]"
+    ref="inputWrapper"
   >
     <label class="main-screen__form-item-label" for="text-input" ref="label">{{
       placeholderText
     }}</label>
     <input
       name="text-input"
-      :type="hidden ? 'password' : file ? 'file' : 'text'"
+      :type="hidden ? 'password' : 'text'"
       :class="[
         'main-screen__form-input',
         'main-screen__form-item-warnings',
         $v.name.$error ? 'error' : '',
+        deletable ? 'deletable' : '',
+        file ? 'file' : '',
+        hidden ? 'password' : '',
       ]"
+      :readonly="file"
       required
       v-model.trim="name"
-      @click="resetValidation"
+      @click="
+        resetValidation()
+        uploadFile()
+      "
       @focusin="active = true"
       @focusout="focus"
       @input="sendData"
       ref="input"
     />
+    <div class="deletable" @click="deleteThisInput" v-if="deletable">
+      <img :src="require('@/assets/img/cross.svg')" alt="delete" />
+    </div>
+    <div class="show-password" @click="showPassword" v-if="hidden">
+      <img :src="require('@/assets/img/passwordEye.svg')" alt="show password" />
+    </div>
     <div class="error-message" v-if="showError && !$v.name.minLength && !phone">
       Name must have at least {{ $v.name.$params.minLength.min }} letters.
     </div>
@@ -62,6 +78,11 @@ export default {
       default: false,
     },
     file: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    deletable: {
       type: Boolean,
       required: false,
       default: false,
@@ -106,10 +127,25 @@ export default {
       }
       return this.isValid
     },
+    deleteThisInput() {
+      this.$refs.inputWrapper.remove()
+    },
+
     resetValidation() {
       this.$v.$reset()
       this.isValid = false
       this.showError = false
+    },
+    uploadFile() {
+      if (this.file) {
+        const input = document.createElement('input')
+        input.type = 'file'
+        input.onchange = (e) => {
+          const file = e.target.files[0]
+          this.name = file.name
+        }
+        input.click()
+      }
     },
     focus() {
       console.log('called')
@@ -119,13 +155,24 @@ export default {
         this.active = true
       }
     },
+
+    showPassword() {
+      console.log('1234123')
+      if (this.hidden) {
+        if (this.$refs.input.type === 'text') {
+          this.$refs.input.type = 'password'
+          return
+        }
+        this.$refs.input.type = 'text'
+        return
+      }
+    },
     sendData() {
       this.$emit('getData', this.placeholderText, this.name)
     },
   },
 }
 </script>
-tc
 
 <style lang="scss" scoped>
 @function rem($px) {
@@ -145,6 +192,11 @@ tc
     color: #86868b;
     pointer-events: none;
   }
+  input[type='password'] {
+    &::-ms-reveal {
+      display: none;
+    }
+  }
   &.active {
     label {
       top: rem(6px);
@@ -157,6 +209,28 @@ tc
     }
   }
   &.password {
+    // &::after {
+    //   content: '';
+    //   position: absolute;
+    //   top: rem(6px);
+    //   right: rem(6px);
+    //   width: rem(40px);
+    //   height: rem(40px);
+    //   background: url('@/assets/img/arrow-down.svg');
+    //   background-position: center;
+    //   background-repeat: no-repeat;
+    //   transition: all 0.3s ease;
+    //   border-radius: rem(10px);
+    //   z-index: 3;
+    // }
+  }
+  &.file {
+    cursor: pointer;
+    &.deletable {
+      &::after {
+        right: 10.5%;
+      }
+    }
     &::after {
       content: '';
       position: absolute;
@@ -164,7 +238,7 @@ tc
       right: rem(6px);
       width: rem(40px);
       height: rem(40px);
-      background: url('@/assets/img/arrow-down.svg');
+      background: url('@/assets/img/dots.svg');
       background-position: center;
       background-repeat: no-repeat;
       transition: all 0.3s ease;
@@ -172,7 +246,40 @@ tc
       z-index: 3;
     }
   }
-  &.file {
+  &.deletable {
+    display: flex;
+    flex-direction: row;
+    gap: rem(12px);
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+  .deletable {
+    width: rem(52px);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  .show-password {
+    position: absolute;
+    top: rem(6px);
+    right: rem(6px);
+    width: rem(40px);
+    height: rem(40px);
+    background: rgba(134, 134, 139, 0.16);
+    transition: all 0.3s ease;
+    border-radius: rem(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+      cursor: pointer;
+      background: rgba(134, 134, 139, 0.36);
+    }
   }
   .main-screen__form-input {
     background: #fff;
@@ -187,7 +294,14 @@ tc
     &.error {
       border: 1px solid red;
     }
-
+    &.file {
+      cursor: pointer;
+    }
+    &.deletable {
+      width: 100%;
+    }
+    &.password {
+    }
     &::placeholder {
       color: #86868b;
       font-weight: 500;
@@ -227,11 +341,16 @@ tc
   }
 }
 
-@media (max-height: 900px) {
-  .input-wrapper {
-    .main-screen__form-input {
-      padding: rem(12px);
-    }
-  }
-}
+// @media (max-height: 900px) {
+//   .input-wrapper {
+//     .main-screen__form-input {
+//       padding: rem(12px);
+//     }
+//     .show-password {
+//       width: rem(38px);
+//       height: rem(38px);
+//     }
+//   }
+// }
+//
 </style>
