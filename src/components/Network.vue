@@ -7,44 +7,55 @@
         :dataNeeded="true"
         ref="validation1"
       />
-      <template v-if="selectedTab === 'Wi-Fi'">
+      <template v-if="selectedTab == 'Wi-Fi'">
         <CustomInput
           :placeholderText="'Network name (SSID)'"
           :defaultErrorText="'Network name (SSID) is required'"
-          v-model="form.networkName"
+          :formField="'ssid'"
           @getData="getData"
           ref="validation2"
+          :formPlace="['network', 'wifi']"
         />
         <SearchSelect
           :optionsCount="authentificationMethods"
           :search="false"
+          :form-field="'Authentification'"
           :defaultText="'Authentification'"
           :defaultErrorText="'Authentification is required'"
           @getData="getData"
           ref="validation3"
+          :form-place="['network', 'wifi']"
         />
         <CustomInput
-          v-if="form.Authentification == 'Basic (WPA2 Personal)'"
+          v-if="form.network.wifi.Authentification === 'Basic (WPA2 Personal)'"
           :placeholderText="'Password'"
           :defaultErrorText="'Password is required'"
+          :formField="'Password'"
           :hidden="true"
+          :formPlace="['network', 'wifi']"
           @getData="getData"
           ref="validation4"
         />
         <SearchSelect
-          v-if="form.Authentification == 'Enterprise (WPA2 Enterprise)'"
+          v-if="
+            form.network.wifi.Authentification ===
+            'Enterprise (WPA2 Enterprise)'
+          "
           :optionsCount="security"
           :search="false"
           :defaultText="'Security'"
           :defaultErrorText="'Security is required'"
+          :formField="'mode'"
+          :form-place="['network', 'wifi', 'enterprise']"
           @getData="getData"
           ref="validation5"
         />
         <template
           v-if="
-            form.Security == 'TLS' &&
-            form.Authentification == 'Enterprise (WPA2 Enterprise)'
+            form.network.wifi.enterprise.mode == 'TLS' &&
+            form.network.wifi.Authentification == 'Enterprise (WPA2 Enterprise)'
           "
+          ref="TLS"
         >
           <CustomInput
             :placeholderText="'CA Certificates'"
@@ -52,12 +63,16 @@
             @getData="getData"
             :file="true"
             ref="validation6"
+            :form-field="'ca_cert'"
+            :formPlace="['network', 'wifi', 'enterprise']"
           />
           <CustomInput
             :placeholderText="'User Idenity'"
             :defaultErrorText="'User Idenity is required'"
             @getData="getData"
             ref="validation7"
+            :formField="'identity'"
+            :formPlace="['network', 'wifi', 'enterprise']"
           />
           <CustomInput
             :placeholderText="'User Private Key'"
@@ -65,12 +80,16 @@
             @getData="getData"
             :file="true"
             ref="validation8"
+            :formField="'private_key'"
+            :formPlace="['network', 'wifi', 'enterprise']"
           />
           <CustomInput
             :placeholderText="'User Private Key Password'"
             :defaultErrorText="'User Private Key Password is required'"
             @getData="getData"
             ref="validation9"
+            :formField="'private_key_password'"
+            :formPlace="['network', 'wifi', 'enterprise']"
           />
           <CustomInput
             :placeholderText="'User Certificate'"
@@ -78,13 +97,16 @@
             @getData="getData"
             :file="true"
             ref="validation10"
+            :formField="'client_cert'"
+            :formPlace="['network', 'wifi', 'enterprise']"
           />
         </template>
         <template
           v-if="
-            form.Security == 'PEAP' &&
-            form.Authentification == 'Enterprise (WPA2 Enterprise)'
+            form.network.wifi.enterprise.mode == 'PEAP' &&
+            form.network.wifi.Authentification == 'Enterprise (WPA2 Enterprise)'
           "
+          ref="PEAP"
         >
           <CustomInput
             :placeholderText="'CA Certificates'"
@@ -92,12 +114,16 @@
             @getData="getData"
             :file="true"
             ref="validation11"
+            :form-field="'ca_cert'"
+            :formPlace="['network', 'wifi', 'enterprise']"
           />
           <CustomInput
             :placeholderText="'User Idenity'"
             :defaultErrorText="'User Idenity is required'"
             @getData="getData"
             ref="validation12"
+            :formField="'identity'"
+            :formPlace="['network', 'wifi', 'enterprise']"
           />
           <CustomInput
             :placeholderText="'User Password'"
@@ -105,6 +131,8 @@
             :hidden="true"
             @getData="getData"
             ref="validation13"
+            :formField="'password'"
+            :formPlace="['network', 'wifi', 'enterprise']"
           />
         </template>
       </template>
@@ -113,15 +141,21 @@
         :search="true"
         :defaultValue="{ name: guestedTimezone }"
         :defaultText="'Time zone'"
+        :form-field="'Time zone'"
         :defaultErrorText="'Time zone is required'"
         @getData="getData"
         ref="validation14"
       />
-      <AdvancedSettings ref="advancedSettings" />
+      <AdvancedSettings
+        ref="advancedSettings"
+        @sendAdvancedForm="getAdvancedForm"
+      />
       <button type="button" class="main-btn" @click="downloadJSON">
         Generate configuration
       </button>
-      <div class="preview-btn">Preview configuration</div>
+      <div class="preview-btn" @click="showPreviewConfig">
+        Preview configuration
+      </div>
     </form>
   </div>
 </template>
@@ -132,16 +166,51 @@ import CustomTabs from '@/components/form/CustomTabs.vue'
 import SearchSelect from '@/components/form/SearchSelect.vue'
 import AdvancedSettings from '@/components/AdvancedSettings.vue'
 import moment from 'moment-timezone'
+import data from '@/assets/data.json'
 export default {
   name: 'Network',
   components: { CustomInput, CustomTabs, SearchSelect, AdvancedSettings },
   data() {
     return {
       form: {
-        Authentification: '',
-        networkName: '',
-        Security: '',
-        Password: '',
+        version: '1.0.0',
+        network: {
+          wifi: {
+            ssid: '',
+            Authentification: '',
+            Password: '',
+            enterprise: {
+              mode: '',
+              ca_cert: '',
+              identity: '',
+              private_key: '',
+              private_key_password: '',
+              client_cert: '',
+            },
+            dns: [],
+            ipv4: {
+              method: '',
+              gateway: '',
+              address: '',
+            },
+          },
+          ethernet: {
+            dns: [],
+            ipv4: {
+              method: '',
+              gateway: '',
+              address: '',
+            },
+          },
+        },
+        proxy: {
+          server: {
+            address: '',
+            port: 8080,
+          },
+        },
+        ntp: [],
+        trust_certificates: [],
       },
       selectedTab: '',
       customTabs: ['Wi-Fi', 'Ethernet'],
@@ -170,7 +239,16 @@ export default {
   },
   methods: {
     downloadJSON() {
-      this.checkAllValidations()
+      if (this.checkAllValidations()) {
+        const jsonData = JSON.stringify(this.form)
+        const blob = new Blob([jsonData], { type: 'application/json' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = 'data.json'
+        link.click()
+        URL.revokeObjectURL(url) // Очистка ссылки для освобождения памяти
+      }
     },
     checkAllValidations() {
       this.validationCount = 0
@@ -209,13 +287,96 @@ export default {
         return true
       }
     },
-    getData(defaultValue, selectedValue) {
-      this.form[defaultValue] = selectedValue
+    getData(formPlace, formField, selectedValue) {
+      if (formPlace) {
+        let formObj = this.form
+        for (let i = 0; i < formPlace.length; i++) {
+          formObj = formObj[formPlace[i]]
+        }
+        formObj[formField] = selectedValue.trim()
+        console.log(
+          'данные записаны в форму глубже',
+          formPlace + ' ' + formField
+        )
+        console.log(this.form)
+        return
+      }
+      this.form[formField] = selectedValue.trim()
       console.log(this.form)
+    },
+    getAdvancedForm(form, selectedTab) {
+      if (
+        selectedTab &&
+        selectedTab.trim() == 'IP Address' &&
+        this.selectedTab == 'Ethernet'
+      ) {
+        console.log('active ip adress')
+        this.form.network.ethernet.ipv4 = {
+          ...form.ipv4,
+        }
+      }
+      if (
+        selectedTab &&
+        selectedTab.trim() == 'IP Address' &&
+        this.selectedTab == 'Wi-Fi'
+      ) {
+        console.log('active ip adress')
+        this.form.network.wifi.ipv4 = {
+          ...form.ipv4,
+        }
+      }
+      if (
+        selectedTab &&
+        selectedTab.trim() == 'DNS' &&
+        this.selectedTab == 'Wi-Fi'
+      ) {
+        this.form.network.wifi.dns = {
+          ...form.dns,
+        }
+      }
+      if (
+        selectedTab &&
+        selectedTab.trim() == 'DNS' &&
+        this.selectedTab == 'Ethernet'
+      ) {
+        this.form.network.ethernet.dns = {
+          ...form.dns,
+        }
+      }
+      if (selectedTab && selectedTab.trim() == 'Proxy') {
+        this.form.proxy = {
+          ...form.proxy,
+        }
+      }
+      if (selectedTab && selectedTab.trim() == 'NTP') {
+        this.form.ntp = {
+          ...form.ntp,
+        }
+      }
+      if (selectedTab && selectedTab.trim() == 'Trusted Site’s Certificates') {
+        this.form.trust_certificates = {
+          ...form.trust_certificates,
+        }
+      }
     },
     getDataTabs(tab) {
       this.selectedTab = tab.textContent.trim()
       console.log(this.selectedTab)
+    },
+    showPreviewConfig() {
+      const jsonData = JSON.stringify(this.form, null, 2)
+      const jsonPreview = jsonData.replace(
+        /("[\w]+": )("[^"]*")/g,
+        (match, p1, p2) => `${p1}<span style="color: #7fae68;">${p2}</span>`
+      )
+      const jsonPreviewWithColors = jsonPreview.replace(
+        /(": )({[^}]+})/g,
+        (match, p1, p2) => `${p1}<span style="color: #cc6666;">${p2}</span>`
+      )
+      const preview = `<style>* {margin: 0; padding: 0; height: 100vh;}</style><pre style="background-color: #1d1f21; color: white; padding: 16px; white-space: pre-wrap;">${jsonPreviewWithColors}</pre>`
+      const blob = new Blob([preview], { type: 'text/html' })
+      const url = URL.createObjectURL(blob)
+      window.open(url, '_blank')
     },
   },
   mounted() {

@@ -20,20 +20,26 @@
           :defaultErrorText="'Option is required'"
           @getData="getData"
           ref="validation1"
+          :form-field="'method'"
+          :formPlace="['ipv4']"
         />
         <CustomInput
-          v-if="form.Option === 'Manual (Static IP)'"
+          v-if="form.ipv4.method === 'Manual (Static IP)'"
           :placeholderText="'IP Address (CIDR Format)'"
           :defaultErrorText="'IP Address (CIDR Format) is required'"
           @getData="getData"
           ref="validation2"
+          :formPlace="['ipv4']"
+          :form-field="'adress'"
         />
         <CustomInput
-          v-if="form.Option === 'Manual (Static IP)'"
+          v-if="form.ipv4.method === 'Manual (Static IP)'"
           :placeholderText="'Gateway'"
           :defaultErrorText="'Gateway is required'"
           @getData="getData"
           ref="validation3"
+          :formPlace="['ipv4']"
+          :form-field="'gateway'"
         />
       </template>
       <template v-if="selectedTab === 'DNS'">
@@ -45,6 +51,8 @@
           @getData="getData"
           deletable
           ref="validation4"
+          :formPlace="['dns']"
+          :form-field="`${index}`"
         />
         <div class="dns-btn" @click="serverIPAdressAmount++">
           Add more
@@ -58,12 +66,16 @@
             :defaultErrorText="'Host is required'"
             @getData="getData"
             ref="validation5"
+            :formPlace="['proxy', 'server']"
+            :formField="'address'"
           />
           <CustomInput
             :placeholderText="'Port'"
             :defaultErrorText="'Port is required'"
             @getData="getData"
             ref="validation6"
+            :formPlace="['proxy', 'server']"
+            :formField="'port'"
           />
         </div>
       </template>
@@ -76,6 +88,8 @@
           @getData="getData"
           deletable
           ref="validation7"
+          :formPlace="['ntp']"
+          :form-field="`${index}`"
         />
         <div class="dns-btn" @click="NTPAmount++">
           Add more
@@ -92,6 +106,8 @@
           deletable
           :file="true"
           ref="validation8"
+          :formPlace="['SitesCertificates']"
+          :formField="`${index}`"
         />
         <div class="dns-btn" @click="SitesCertificatesAmount++">
           Add more
@@ -121,7 +137,20 @@ export default {
       Options: [{ name: 'Automatic DHCP' }, { name: 'Manual (Static IP)' }],
       selectedTab: '',
       form: {
-        Option: '',
+        ipv4: {
+          method: '',
+          gateway: '',
+          adress: '',
+        },
+        dns: [],
+        proxy: {
+          server: {
+            address: '',
+            port: '',
+          },
+        },
+        ntp: [],
+        SitesCertificates: [],
       },
       serverIPAdressAmount: 1,
       NTPAmount: 1,
@@ -141,15 +170,18 @@ export default {
         console.log(this.selectedTab)
       }
     },
-    getData(defaultValue, selectedValue) {
-      if (defaultValue && selectedValue) {
-        this.form[defaultValue] = selectedValue
-        console.log(this.form)
+    getData(formPlace, formField, selectedValue) {
+      if (formPlace) {
+        let formObj = this.form
+        for (let i = 0; i < formPlace.length; i++) {
+          formObj = formObj[formPlace[i]]
+        }
+        formObj[formField] = selectedValue.trim()
+        this.$emit('sendAdvancedForm', this.form, this.selectedTab)
+        return
       }
-      if (defaultValue && !selectedValue) {
-        this.form[defaultValue] = ''
-        console.log(this.form)
-      }
+      this.form[formField] = selectedValue.trim()
+      this.$emit('sendAdvancedForm', this.form, this.selectedTab)
     },
     checkAllValidations() {
       this.validationCount = 0

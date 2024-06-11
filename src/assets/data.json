@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "network": {
+    "wifi": {
+      "ssid": "<< ssid >>",
+      "hidden": false,
+      "password": "<< password >>",
+      "enterprise": {
+        "mode": "tls|peap",
+        "identity": "<< identity >>",
+        "password": "<< password >>",
+        "private_key_password": "key_password",
+        "ca_cert": "<< Файл сертификата в Base64 utf8 >>",
+        "client_cert": "<< Файл сертификата в Base64 utf8 >>",
+        "private_key": "<< Файл сертификата в Base64 utf8 >>"
+      },
+      "dns": ["8.8.8.8", "8.8.4.4"],
+      "ipv4": {
+        "method": "manual",
+        "gateway": "192.168.0.1",
+        "address": "192.168.0.100/24"
+      }
+    },
+    "ethernet": {
+      "dns": ["8.8.8.8", "8.8.4.4"],
+      "ipv4": {
+        "method": "manual",
+        "gateway": "192.168.0.1",
+        "address": "192.168.0.100/24"
+      }
+    }
+  },
+  "timezone": "Europe/Kiev",
+  "proxy": {
+    "server": {
+      "address": "192.168.0.1",
+      "port": 8080
+    }
+  },
+  "ntp": ["time.nist.gov", "time2.nist.gov"],
+  "trust_certificates": [
+    "<< Файл сертификата в Base64 utf8 >>",
+    "<< Файл сертификата в Base64 utf8 >>"
+  ]
+}

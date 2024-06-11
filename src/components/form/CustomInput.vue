@@ -87,6 +87,14 @@ export default {
       required: false,
       default: false,
     },
+    formField: {
+      type: String,
+      required: false,
+    },
+    formPlace: {
+      type: Array,
+      required: false,
+    },
   },
   data() {
     return {
@@ -168,6 +176,11 @@ export default {
       }
     },
     sendData() {
+      if (this.formField) {
+        this.$emit('getData', this.formPlace, this.formField, this.name)
+        console.log('вернулись данные с именем поля ' + this.formField)
+        return
+      }
       this.$emit('getData', this.placeholderText, this.name)
     },
   },

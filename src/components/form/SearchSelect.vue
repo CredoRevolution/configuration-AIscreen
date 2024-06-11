@@ -71,6 +71,14 @@ export default {
       type: Object,
       required: false,
     },
+    formField: {
+      type: String,
+      required: false,
+    },
+    formPlace: {
+      type: Array,
+      required: false,
+    },
   },
   validations: {
     value: {
@@ -109,8 +117,13 @@ export default {
       return `${name}`
     },
     checkState() {
+      if (this.formField && this.value.name) {
+        this.$emit('getData', this.formPlace, this.formField, this.value.name)
+        console.log('вернулись данные с именем поля ' + this.formField)
+        return
+      }
       if (this.value.name) {
-        this.$emit('getData', this.defaultText, this.value.name)
+        this.$emit('getData', this.formField, this.value.name)
       }
       if (this.industry) {
         this.$emit('getInfo', this.value.name)
@@ -126,6 +139,7 @@ export default {
         this.value = this.defaultValue
         this.checkLabel()
         this.showValue = true
+        this.checkState()
       }
     }, 1000)
   },
