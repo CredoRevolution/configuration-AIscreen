@@ -141,7 +141,7 @@ export default {
         this.showValue = true
         this.checkState()
       }
-    }, 1000)
+    }, 0)
   },
 }
 </script>
@@ -150,7 +150,6 @@ export default {
 @function rem($px) {
   @return ($px / 16px) + rem;
 }
-
 .select-wrapper {
   position: relative;
   label {

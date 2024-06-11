@@ -44,6 +44,7 @@
           :optionsCount="security"
           :search="false"
           :defaultText="'Security'"
+          :default-value="{ name: 'TLS' }"
           :defaultErrorText="'Security is required'"
           :formField="'mode'"
           :form-place="['network', 'wifi', 'enterprise']"
@@ -138,7 +139,7 @@
       </template>
       <SearchSelect
         :optionsCount="timeZone"
-        :search="true"
+        :search="false"
         :defaultValue="{ name: guestedTimezone }"
         :defaultText="'Time zone'"
         :form-field="'Time zone'"
@@ -216,7 +217,7 @@ export default {
       customTabs: ['Wi-Fi', 'Ethernet'],
       authentificationMethods: [
         {
-          name: 'none',
+          name: 'None',
         },
         {
           name: 'Basic (WPA2 Personal)',
