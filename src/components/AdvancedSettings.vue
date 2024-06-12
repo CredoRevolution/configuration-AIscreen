@@ -106,7 +106,7 @@
           deletable
           :file="true"
           ref="validation8"
-          :formPlace="['SitesCertificates']"
+          :formPlace="['trust_certificates']"
           :formField="`${index}`"
         />
         <div class="dns-btn" @click="SitesCertificatesAmount++">
@@ -150,7 +150,7 @@ export default {
           },
         },
         ntp: [],
-        SitesCertificates: [],
+        trust_certificates: [],
       },
       serverIPAdressAmount: 1,
       NTPAmount: 1,

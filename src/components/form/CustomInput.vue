@@ -102,6 +102,7 @@ export default {
       isValid: false,
       showError: false,
       active: false,
+      baseFile: '',
     }
   },
   validations: {
@@ -144,16 +145,30 @@ export default {
       this.isValid = false
       this.showError = false
     },
-    uploadFile() {
+    async uploadFile() {
       if (this.file) {
         const input = document.createElement('input')
         input.type = 'file'
-        input.onchange = (e) => {
+        input.accept = '.txt'
+        input.onchange = async (e) => {
           const file = e.target.files[0]
-          this.name = file.name
+          const reader = new FileReader()
+          reader.onload = async (event) => {
+            const base64String = await this.compress(event.target.result)
+            this.baseFile = base64String
+            console.log(this.baseFile)
+            this.$emit('getData', this.formPlace, this.formField, this.baseFile)
+            this.name = file.name
+          }
+          reader.readAsText(file)
         }
         input.click()
       }
+    },
+    async compress(text) {
+      const encoder = new TextEncoder()
+      const compressed = await new Response(encoder.encode(text)).arrayBuffer()
+      return btoa(String.fromCharCode.apply(null, new Uint8Array(compressed)))
     },
     focus() {
       console.log('called')
@@ -176,6 +191,9 @@ export default {
       }
     },
     sendData() {
+      if (this.baseFile) {
+        console.log(this.baseFile)
+      }
       if (this.formField) {
         this.$emit('getData', this.formPlace, this.formField, this.name)
         console.log('вернулись данные с именем поля ' + this.formField)
