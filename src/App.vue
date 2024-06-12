@@ -24,7 +24,9 @@ export default {
   box-sizing: border-box;
   font-family: 'satoshi', sans-serif;
 }
-
+body {
+  overflow-y: scroll;
+}
 #app {
   background: rgba(245, 245, 248, 1);
   padding-top: rem(100px);

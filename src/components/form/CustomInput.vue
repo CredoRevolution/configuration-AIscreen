@@ -14,7 +14,7 @@
       placeholderText
     }}</label>
     <input
-      name="text-input"
+      :name="`${placeholderText}`"
       :type="hidden ? 'password' : 'text'"
       :class="[
         'main-screen__form-input',
@@ -40,7 +40,26 @@
       <img :src="require('@/assets/img/cross.svg')" alt="delete" />
     </div>
     <div class="show-password" @click="showPassword" v-if="hidden">
-      <img :src="require('@/assets/img/passwordEye.svg')" alt="show password" />
+      <img
+        :src="require('@/assets/img/passwordHide.svg')"
+        alt="show password"
+        v-if="showPasswordIcon"
+      />
+      <img
+        :src="require('@/assets/img/passwordError.svg')"
+        alt="show password"
+        v-else-if="showError"
+      />
+      <img
+        :src="require('@/assets/img/passwordActive.svg')"
+        alt="show password"
+        v-else-if="active"
+      />
+      <img
+        :src="require('@/assets/img/passwordEye.svg')"
+        alt="show password"
+        v-else
+      />
     </div>
     <div class="error-message" v-if="showError && !$v.name.minLength && !phone">
       Name must have at least {{ $v.name.$params.minLength.min }} letters.
@@ -103,6 +122,7 @@ export default {
       showError: false,
       active: false,
       baseFile: '',
+      showPasswordIcon: false,
     }
   },
   validations: {
@@ -180,13 +200,14 @@ export default {
     },
 
     showPassword() {
-      console.log('1234123')
       if (this.hidden) {
         if (this.$refs.input.type === 'text') {
           this.$refs.input.type = 'password'
+          this.showPasswordIcon = false
           return
         }
         this.$refs.input.type = 'text'
+        this.showPasswordIcon = true
         return
       }
     },

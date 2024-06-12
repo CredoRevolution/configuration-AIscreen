@@ -243,20 +243,32 @@ export default {
   gap: rem(17px);
   transition: all 0.3s ease;
   cursor: pointer;
+  &:hover {
+    color: rgba(20, 18, 31, 1);
+    transition: all 0.3s ease;
+    &::after {
+      transition: all 0.3s ease;
+      opacity: 1;
+    }
+  }
   &::after {
-    content: url(@/assets/img/advanced.svg);
+    content: url(@/assets/img/advanced-active.svg);
     position: relative;
     min-width: rem(17px);
     transition: all 0.3s ease;
-    top: rem(-2px);
+    transform: rotateX(180deg);
+    top: rem(5px);
+    opacity: 0.4;
   }
+
   &.active {
     color: rgba(20, 18, 31, 1);
     margin-bottom: rem(34px);
     &::after {
-      // transform: rotateX(360deg);
-      content: url(@/assets/img/advanced-active.svg);
+      transform: rotateX(360deg);
       transition: all 0.3s ease;
+      opacity: 1;
+      top: rem(-2px);
     }
   }
 }

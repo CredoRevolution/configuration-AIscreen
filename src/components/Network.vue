@@ -139,7 +139,7 @@
       </template>
       <SearchSelect
         :optionsCount="timeZone"
-        :search="false"
+        :search="true"
         :defaultValue="{ name: guestedTimezone }"
         :defaultText="'Time zone'"
         :form-field="'Time zone'"
@@ -368,13 +368,13 @@ export default {
       const jsonData = JSON.stringify(this.form, null, 2)
       const jsonPreview = jsonData.replace(
         /("[\w]+": )("[^"]*")/g,
-        (match, p1, p2) => `${p1}<span style="color: #7fae68;">${p2}</span>`
+        (match, p1, p2) => `${p1}<span style="color: #54b2bd;">${p2}</span>`
       )
       const jsonPreviewWithColors = jsonPreview.replace(
         /(": )({[^}]+})/g,
         (match, p1, p2) => `${p1}<span style="color: #cc6666;">${p2}</span>`
       )
-      const preview = `<style>* {margin: 0; padding: 0; height: 100vh;}</style><pre style="background-color: #1d1f21; color: white; padding: 16px; white-space: pre-wrap;">${jsonPreviewWithColors}</pre>`
+      const preview = `<style>* {margin: 0; padding: 0; height: 100vh;}</style><pre style="background-color: #1d1f21; color: #ffaf48; padding: 16px; white-space: pre-wrap;">${jsonPreviewWithColors}</pre>`
       const blob = new Blob([preview], { type: 'text/html' })
       const url = URL.createObjectURL(blob)
       window.open(url, '_blank')

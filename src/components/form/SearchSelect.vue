@@ -19,9 +19,10 @@
       v-model="value"
       track-by="name"
       @select="checkState"
-      @open="active = true"
+      @open="handleOpen"
       @close="checkLabel"
-    ></multiselect>
+    >
+    </multiselect>
     <p v-if="showError && !$v.value.mustBeSelected" class="error-message">
       {{ defaultErrorText }}
     </p>
@@ -127,6 +128,13 @@ export default {
       }
       if (this.industry) {
         this.$emit('getInfo', this.value.name)
+      }
+    },
+    handleOpen() {
+      this.active = true
+      if (this.search) {
+        const searchQuery = document.querySelector('.multiselect__input')
+        searchQuery.placeholder = this.value.name
       }
     },
   },
