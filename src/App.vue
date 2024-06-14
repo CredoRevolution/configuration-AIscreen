@@ -29,8 +29,7 @@ body {
 }
 #app {
   background: rgba(245, 245, 248, 1);
-  padding-top: rem(100px);
-  padding-bottom: rem(100px);
+  padding: 10vh 0;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
