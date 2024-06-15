@@ -12,7 +12,12 @@
       :value="value"
       :allowEmpty="false"
       :searchable="search"
-      :class="{ error: $v.value && $v.value.$error, showValue }"
+      :class="{
+        error: $v.value && $v.value.$error,
+        showValue: showValue,
+        valid:
+          !$v.value.$error && $v.value.$model && value?.name !== defaultText,
+      }"
       placeholder=""
       label="name"
       name="select"
@@ -136,6 +141,26 @@ export default {
         const searchQuery = document.querySelector('.multiselect__input')
         searchQuery.placeholder = this.value.name
       }
+      this.$nextTick(() => {
+        const list = this.$el.querySelector('.multiselect__content')
+        if (list) {
+          const listItems = Array.from(list.children)
+          const selectedIndex = listItems.findIndex(
+            (item) => item.textContent.trim() === this.value.name
+          )
+          list.scrollTop = 1000
+          list.style.overflowY = 'auto'
+          list.style.maxHeight = '300px'
+          if (selectedIndex !== -1) {
+            console.log('есть совпадение', selectedIndex)
+            const listItemSelected = listItems[selectedIndex]
+            const listItemSelectedTop =
+              listItemSelected.offsetTop - list.offsetTop
+            list.scrollTop = listItemSelectedTop
+            console.log(list.scrollTop, listItemSelectedTop)
+          }
+        }
+      })
     },
   },
 
@@ -160,6 +185,7 @@ export default {
 }
 .select-wrapper {
   position: relative;
+  cursor: pointer;
   label {
     position: absolute;
     transition: all 0.3s ease;
@@ -201,6 +227,13 @@ export default {
     &.error {
       .multiselect__tags {
         border: 1px solid red;
+      }
+    }
+    &.valid {
+      .multiselect__tags {
+        border: 1px solid #248d04;
+        box-shadow: 0px 0px 8px #248d04;
+        transition: all 0.3s ease;
       }
     }
     &.showValue {
@@ -273,6 +306,7 @@ export default {
       border: 1px solid #0071e2;
       border-top: 0;
       overflow-x: hidden;
+      overflow-y: hidden;
       .multiselect__option {
         padding: rem(15px);
         font-size: rem(17px);

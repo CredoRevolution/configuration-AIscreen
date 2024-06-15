@@ -14,7 +14,7 @@
       placeholderText
     }}</label>
     <input
-      :name="`${placeholderText}`"
+      :name="inputName"
       :type="hidden ? 'password' : 'text'"
       :class="[
         'main-screen__form-input',
@@ -23,6 +23,7 @@
         deletable ? 'deletable' : '',
         file ? 'file' : '',
         hidden ? 'password' : '',
+        !$v.name.$error && $v.name.$model ? 'valid' : '',
       ]"
       :readonly="file"
       required
@@ -113,6 +114,10 @@ export default {
     formPlace: {
       type: Array,
       required: false,
+    },
+    inputName: {
+      type: String,
+      required: true,
     },
   },
   data() {
@@ -212,6 +217,7 @@ export default {
       }
     },
     sendData() {
+      this.checkValidation()
       if (this.baseFile) {
         console.log(this.baseFile)
       }
@@ -296,6 +302,7 @@ export default {
       transition: all 0.3s ease;
       border-radius: rem(10px);
       z-index: 3;
+      pointer-events: none;
     }
   }
   &.deletable {
@@ -312,7 +319,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    &:hover {
+    img {
       cursor: pointer;
     }
   }
@@ -345,6 +352,11 @@ export default {
     border: 1px solid #86868b80;
     &.error {
       border: 1px solid red;
+    }
+    &.valid {
+      border: 1px solid #248d04;
+      box-shadow: 0px 0px 8px #248d04;
+      transition: all 0.3s ease;
     }
     &.file {
       cursor: pointer;

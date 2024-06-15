@@ -12,9 +12,10 @@
           :placeholderText="'Network name (SSID)'"
           :defaultErrorText="'Network name (SSID) is required'"
           :formField="'ssid'"
+          :formPlace="['network', 'wifi']"
+          :inputName="'ssid'"
           @getData="getData"
           ref="validation2"
-          :formPlace="['network', 'wifi']"
         />
         <SearchSelect
           :optionsCount="authentificationMethods"
@@ -22,9 +23,9 @@
           :form-field="'Authentification'"
           :defaultText="'Authentification'"
           :defaultErrorText="'Authentification is required'"
+          :form-place="['network', 'wifi']"
           @getData="getData"
           ref="validation3"
-          :form-place="['network', 'wifi']"
         />
         <CustomInput
           v-if="form.network.wifi.Authentification === 'Basic (WPA2 Personal)'"
@@ -33,6 +34,7 @@
           :formField="'Password'"
           :hidden="true"
           :formPlace="['network', 'wifi']"
+          :inputName="'Password'"
           @getData="getData"
           ref="validation4"
         />
@@ -60,46 +62,51 @@
         >
           <CustomInput
             :placeholderText="'CA Certificates'"
-            :defaultErrorText="'CA Certificates is required'"
-            @getData="getData"
+            :defaultErrorText="'CA certificates is required'"
             :file="true"
-            ref="validation6"
             :form-field="'ca_cert'"
             :formPlace="['network', 'wifi', 'enterprise']"
+            :input-name="'ca certificates'"
+            @getData="getData"
+            ref="validation6"
           />
           <CustomInput
             :placeholderText="'User Idenity'"
-            :defaultErrorText="'User Idenity is required'"
-            @getData="getData"
-            ref="validation7"
+            :defaultErrorText="'User idenity is required'"
             :formField="'identity'"
             :formPlace="['network', 'wifi', 'enterprise']"
+            :input-name="'user identity'"
+            @getData="getData"
+            ref="validation7"
           />
           <CustomInput
             :placeholderText="'User Private Key'"
-            :defaultErrorText="'User Private Key is required'"
-            @getData="getData"
+            :defaultErrorText="'User private key is required'"
             :file="true"
-            ref="validation8"
             :formField="'private_key'"
             :formPlace="['network', 'wifi', 'enterprise']"
+            :input-name="'private key'"
+            @getData="getData"
+            ref="validation8"
           />
           <CustomInput
             :placeholderText="'User Private Key Password'"
-            :defaultErrorText="'User Private Key Password is required'"
-            @getData="getData"
-            ref="validation9"
+            :defaultErrorText="'User private key password is required'"
             :formField="'private_key_password'"
             :formPlace="['network', 'wifi', 'enterprise']"
+            :input-name="'private key password'"
+            @getData="getData"
+            ref="validation9"
           />
           <CustomInput
             :placeholderText="'User Certificate'"
-            :defaultErrorText="'User Certificate is required'"
-            @getData="getData"
+            :defaultErrorText="'User certificate is required'"
             :file="true"
-            ref="validation10"
             :formField="'client_cert'"
             :formPlace="['network', 'wifi', 'enterprise']"
+            :input-name="'client certificate'"
+            @getData="getData"
+            ref="validation10"
           />
         </template>
         <template
@@ -111,29 +118,32 @@
         >
           <CustomInput
             :placeholderText="'CA Certificates'"
-            :defaultErrorText="'CA Certificates is required'"
-            @getData="getData"
+            :defaultErrorText="'CA certificates is required'"
             :file="true"
-            ref="validation11"
             :form-field="'ca_cert'"
             :formPlace="['network', 'wifi', 'enterprise']"
+            :input-name="'ca certificates'"
+            @getData="getData"
+            ref="validation11"
           />
           <CustomInput
             :placeholderText="'User Idenity'"
-            :defaultErrorText="'User Idenity is required'"
-            @getData="getData"
-            ref="validation12"
+            :defaultErrorText="'User idenity is required'"
             :formField="'identity'"
             :formPlace="['network', 'wifi', 'enterprise']"
+            :input-name="'user identity'"
+            @getData="getData"
+            ref="validation12"
           />
           <CustomInput
             :placeholderText="'User Password'"
-            :defaultErrorText="'User Password is required'"
+            :defaultErrorText="'User password is required'"
             :hidden="true"
-            @getData="getData"
-            ref="validation13"
             :formField="'password'"
             :formPlace="['network', 'wifi', 'enterprise']"
+            :input-name="'user password'"
+            @getData="getData"
+            ref="validation13"
           />
         </template>
       </template>
@@ -413,7 +423,8 @@ export default {
     height: 100%;
     left: rem(-18px);
     color: #d42b2b;
-    bottom: -10%;
+    align-items: center;
+    flex-direction: row;
   }
 }
 

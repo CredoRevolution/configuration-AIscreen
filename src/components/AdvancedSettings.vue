@@ -18,28 +18,30 @@
           :optionsCount="Options"
           :defaultText="'Option'"
           :defaultErrorText="'Option is required'"
-          @getData="getData"
-          ref="validation1"
           :form-field="'method'"
           :formPlace="['ipv4']"
+          @getData="getData"
+          ref="validation1"
         />
         <CustomInput
           v-if="form.ipv4.method === 'Manual (Static IP)'"
           :placeholderText="'IP Address (CIDR Format)'"
-          :defaultErrorText="'IP Address (CIDR Format) is required'"
+          :defaultErrorText="'IP address (CIDR format) is required'"
+          :formPlace="['ipv4']"
+          :input-name="'IP'"
+          :form-field="'adress'"
           @getData="getData"
           ref="validation2"
-          :formPlace="['ipv4']"
-          :form-field="'adress'"
         />
         <CustomInput
           v-if="form.ipv4.method === 'Manual (Static IP)'"
           :placeholderText="'Gateway'"
           :defaultErrorText="'Gateway is required'"
-          @getData="getData"
-          ref="validation3"
           :formPlace="['ipv4']"
           :form-field="'gateway'"
+          :input-name="'gateway'"
+          @getData="getData"
+          ref="validation3"
         />
       </template>
       <template v-if="selectedTab === 'DNS'">
@@ -47,12 +49,13 @@
           v-for="(adress, index) in serverIPAdressAmount"
           :key="index"
           :placeholderText="'Server IP Address'"
-          :defaultErrorText="'Server IP Address is required'"
+          :defaultErrorText="'Server IP address is required'"
+          :formPlace="['dns']"
+          :form-field="`${index}`"
+          :input-name="'IP'"
           @getData="getData"
           deletable
           ref="validation4"
-          :formPlace="['dns']"
-          :form-field="`${index}`"
         />
         <div class="dns-btn" @click="serverIPAdressAmount++">
           Add more
@@ -64,18 +67,20 @@
           <CustomInput
             :placeholderText="'Host'"
             :defaultErrorText="'Host is required'"
-            @getData="getData"
-            ref="validation5"
             :formPlace="['proxy', 'server']"
             :formField="'address'"
+            :input-name="'host'"
+            @getData="getData"
+            ref="validation5"
           />
           <CustomInput
             :placeholderText="'Port'"
             :defaultErrorText="'Port is required'"
-            @getData="getData"
-            ref="validation6"
             :formPlace="['proxy', 'server']"
             :formField="'port'"
+            :input-name="'port'"
+            @getData="getData"
+            ref="validation6"
           />
         </div>
       </template>
@@ -85,11 +90,12 @@
           :key="index"
           :placeholderText="'NTP'"
           :defaultErrorText="'NTP is required'"
+          :formPlace="['ntp']"
+          :form-field="`${index}`"
+          :input-name="'ntp'"
           @getData="getData"
           deletable
           ref="validation7"
-          :formPlace="['ntp']"
-          :form-field="`${index}`"
         />
         <div class="dns-btn" @click="NTPAmount++">
           Add more
@@ -102,12 +108,13 @@
           :key="index"
           :placeholderText="'Deploy trusted site’s certificates'"
           :defaultErrorText="'Trusted site’s certificates is required'"
-          @getData="getData"
-          deletable
           :file="true"
-          ref="validation8"
           :formPlace="['trust_certificates']"
           :formField="`${index}`"
+          :input-name="'trusted site’s certificates'"
+          @getData="getData"
+          deletable
+          ref="validation8"
         />
         <div class="dns-btn" @click="SitesCertificatesAmount++">
           Add more
@@ -287,6 +294,7 @@ export default {
   line-height: rem(23px);
   font-weight: 700;
   color: rgba(0, 113, 226, 1);
+  margin-left: rem(17px);
   cursor: pointer;
   font-family: 'satoshi', sans-serif;
   img {
