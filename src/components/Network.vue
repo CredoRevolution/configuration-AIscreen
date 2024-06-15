@@ -376,6 +376,7 @@ export default {
     },
     showPreviewConfig() {
       const jsonData = JSON.stringify(this.form, null, 2)
+
       const jsonPreview = jsonData.replace(
         /("[\w]+": )("[^"]*")/g,
         (match, p1, p2) => `${p1}<span style="color: #54b2bd;">${p2}</span>`
@@ -384,7 +385,7 @@ export default {
         /(": )({[^}]+})/g,
         (match, p1, p2) => `${p1}<span style="color: #cc6666;">${p2}</span>`
       )
-      const preview = `<style>* {margin: 0; padding: 0; height: 100vh;}</style><pre style="background-color: #1d1f21; color: #ffaf48; padding: 16px; white-space: pre-wrap;">${jsonPreviewWithColors}</pre>`
+      const preview = `<style>* {margin: 0; padding: 0; height: 100vh;}</style><pre style="background-color: #1d1f21; color: #b3ff00; padding: 16px; white-space: pre-wrap;">${jsonPreviewWithColors}</pre>`
       const blob = new Blob([preview], { type: 'text/html' })
       const url = URL.createObjectURL(blob)
       window.open(url, '_blank')
