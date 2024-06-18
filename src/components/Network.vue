@@ -393,7 +393,11 @@ export default {
           } else if (key === 'mode') {
             return value.toLowerCase()
           } else {
-            return value
+            if (typeof value === 'string' && value.includes('(')) {
+              return value.replace(/ *\([^)]*\) */g, '').toLowerCase()
+            } else {
+              return value
+            }
           }
         }
       )
