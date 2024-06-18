@@ -20,10 +20,10 @@
         <SearchSelect
           :optionsCount="authentificationMethods"
           :search="false"
-          :form-field="'Authentification'"
           :defaultText="'Authentification'"
           :defaultErrorText="'Authentification is required'"
           :form-place="['network', 'wifi']"
+          :formField="'Authentification'"
           @getData="getData"
           ref="validation3"
         />
@@ -31,7 +31,7 @@
           v-if="form.network.wifi.Authentification === 'Basic (WPA2 Personal)'"
           :placeholderText="'Password'"
           :defaultErrorText="'Password is required'"
-          :formField="'Password'"
+          :formField="'password'"
           :hidden="true"
           :formPlace="['network', 'wifi']"
           :inputName="'Password'"
@@ -148,11 +148,11 @@
         </template>
       </template>
       <SearchSelect
-        :optionsCount="timeZone"
+        :optionsCount="timezone"
         :search="true"
         :defaultValue="{ name: guestedTimezone }"
         :defaultText="'Time zone'"
-        :form-field="'Time zone'"
+        :form-field="'timezone'"
         :defaultErrorText="'Time zone is required'"
         @getData="getData"
         ref="validation14"
@@ -188,14 +188,14 @@ export default {
         network: {
           wifi: {
             ssid: '',
+            password: '',
             Authentification: '',
-            Password: '',
             enterprise: {
               mode: '',
-              ca_cert: '',
               identity: '',
-              private_key: '',
               private_key_password: '',
+              ca_cert: '',
+              private_key: '',
               client_cert: '',
             },
             dns: [],
@@ -217,7 +217,7 @@ export default {
         proxy: {
           server: {
             address: '',
-            port: 8080,
+            port: Number,
           },
         },
         ntp: [],
@@ -244,14 +244,16 @@ export default {
           name: 'PEAP',
         },
       ],
-      timeZone: [],
+      timezone: [],
       guestedTimezone: '',
+      readyJSON: {},
     }
   },
   methods: {
     downloadJSON() {
       if (this.checkAllValidations()) {
-        const jsonData = JSON.stringify(this.form)
+        const cleanedForm = this.cleanForm()
+        const jsonData = JSON.stringify(cleanedForm, null, 2)
         const blob = new Blob([jsonData], { type: 'application/json' })
         const url = URL.createObjectURL(blob)
         const link = document.createElement('a')
@@ -291,11 +293,12 @@ export default {
           this.validationCount++
         }
       })
-      this.$refs.advancedSettings.checkAllValidations()
-      console.log(this.validationCount, 'validations of', visibleValidations)
-      if (this.validationCount === visibleValidations) {
-        console.log('validations passed')
-        return true
+      if (this.$refs.advancedSettings.checkAllValidations()) {
+        console.log(this.validationCount, 'validations of', visibleValidations)
+        if (this.validationCount === visibleValidations) {
+          console.log('validations passed')
+          return true
+        }
       }
     },
     getData(formPlace, formField, selectedValue) {
@@ -341,18 +344,14 @@ export default {
         selectedTab.trim() == 'DNS' &&
         this.selectedTab == 'Wi-Fi'
       ) {
-        this.form.network.wifi.dns = {
-          ...form.dns,
-        }
+        this.form.network.wifi.dns = [...form.dns]
       }
       if (
         selectedTab &&
         selectedTab.trim() == 'DNS' &&
         this.selectedTab == 'Ethernet'
       ) {
-        this.form.network.ethernet.dns = {
-          ...form.dns,
-        }
+        this.form.network.ethernet.dns = [...form.dns]
       }
       if (selectedTab && selectedTab.trim() == 'Proxy') {
         this.form.proxy = {
@@ -360,40 +359,77 @@ export default {
         }
       }
       if (selectedTab && selectedTab.trim() == 'NTP') {
-        this.form.ntp = {
-          ...form.ntp,
-        }
+        this.form.ntp = [...form.ntp]
       }
       if (selectedTab && selectedTab.trim() == 'Trusted Site’s Certificates') {
-        this.form.trust_certificates = {
-          ...form.trust_certificates,
-        }
+        this.form.trust_certificates = [...form.trust_certificates]
       }
     },
     getDataTabs(tab) {
       this.selectedTab = tab.textContent.trim()
       console.log(this.selectedTab)
     },
+    cleanForm() {
+      const cleanedForm = JSON.parse(
+        JSON.stringify(this.form, (key, value) =>
+          value == null ||
+          value === '' ||
+          (Array.isArray(value) && value.length === 0) ||
+          (typeof value === 'object' &&
+            value !== null &&
+            Object.keys(value).length === 0)
+            ? undefined
+            : value
+        ),
+        (key, value) => {
+          if (
+            value === null ||
+            value === '' ||
+            key === 'Authentification' ||
+            value === 'Option' ||
+            (typeof value === 'object' && Object.keys(value).length === 0)
+          ) {
+            return undefined
+          } else if (key === 'mode') {
+            return value.toLowerCase()
+          } else {
+            return value
+          }
+        }
+      )
+      return cleanedForm
+    },
     showPreviewConfig() {
-      const jsonData = JSON.stringify(this.form, null, 2)
+      const cleanedForm = this.cleanForm()
+      this.readyJSON = cleanedForm
+      const jsonData = JSON.stringify(cleanedForm, null, 2)
 
       const jsonPreview = jsonData.replace(
         /("[\w]+": )("[^"]*")/g,
-        (match, p1, p2) => `${p1}<span style="color: #54b2bd;">${p2}</span>`
+        (match, p1, p2) =>
+          `${p1}<span style="color: #54b2bd;">${p2.replace(
+            /[(][^)]*[)]/,
+            ''
+          )}</span>`
       )
       const jsonPreviewWithColors = jsonPreview.replace(
         /(": )({[^}]+})/g,
-        (match, p1, p2) => `${p1}<span style="color: #cc6666;">${p2}</span>`
+        (match, p1, p2) =>
+          `${p1}<span style="color: #cc6666;">${p2.replace(
+            /[(][^)]*[)]/,
+            ''
+          )}</span>`
       )
       const preview = `<style>* {margin: 0; padding: 0; height: 100vh;}</style><pre style="background-color: #1d1f21; color: #b3ff00; padding: 16px; white-space: pre-wrap;">${jsonPreviewWithColors}</pre>`
       const blob = new Blob([preview], { type: 'text/html' })
       const url = URL.createObjectURL(blob)
       window.open(url, '_blank')
+      console.log(this.form)
     },
   },
   mounted() {
     this.guestedTimezone = moment.tz.guess()
-    this.timeZone = moment.tz.names().map((name) => ({ name }))
+    this.timezone = moment.tz.names().map((name) => ({ name }))
   },
 }
 </script>

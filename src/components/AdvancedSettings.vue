@@ -29,7 +29,7 @@
           :defaultErrorText="'IP address (CIDR format) is required'"
           :formPlace="['ipv4']"
           :input-name="'IP'"
-          :form-field="'adress'"
+          :form-field="'address'"
           @getData="getData"
           ref="validation2"
         />
