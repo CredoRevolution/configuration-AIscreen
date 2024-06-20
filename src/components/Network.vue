@@ -157,6 +157,14 @@
         @getData="getData"
         ref="validation14"
       />
+      <CustomCheckbox
+        v-show="selectedTab === 'Wi-Fi'"
+        :placeholderText="'Hidden network'"
+        :formField="'hidden'"
+        :formPlace="['network', 'wifi']"
+        @getData="getData"
+        ref="customCheckbox"
+      />
       <AdvancedSettings
         ref="advancedSettings"
         @sendAdvancedForm="getAdvancedForm"
@@ -175,12 +183,19 @@
 import CustomInput from '@/components/form/CustomInput.vue'
 import CustomTabs from '@/components/form/CustomTabs.vue'
 import SearchSelect from '@/components/form/SearchSelect.vue'
+import CustomCheckbox from '@/components/form/CustomCheckbox.vue'
 import AdvancedSettings from '@/components/AdvancedSettings.vue'
 import moment from 'moment-timezone'
 import data from '@/assets/data.json'
 export default {
   name: 'Network',
-  components: { CustomInput, CustomTabs, SearchSelect, AdvancedSettings },
+  components: {
+    CustomInput,
+    CustomTabs,
+    SearchSelect,
+    AdvancedSettings,
+    CustomCheckbox,
+  },
   data() {
     return {
       form: {
@@ -188,6 +203,7 @@ export default {
         network: {
           wifi: {
             ssid: '',
+            hidden: false,
             password: '',
             Authentification: '',
             enterprise: {
@@ -307,7 +323,12 @@ export default {
         for (let i = 0; i < formPlace.length; i++) {
           formObj = formObj[formPlace[i]]
         }
-        formObj[formField] = selectedValue.trim()
+        if (typeof selectedValue === 'boolean') {
+          console.log('bool')
+          formObj[formField] = selectedValue
+        } else {
+          formObj[formField] = selectedValue.trim()
+        }
         console.log(
           'данные записаны в форму глубже',
           formPlace + ' ' + formField
@@ -315,7 +336,12 @@ export default {
         console.log(this.form)
         return
       }
-      this.form[formField] = selectedValue.trim()
+      if (typeof selectedValue === 'boolean') {
+        console.log('bool')
+        this.form[formField] = selectedValue
+      } else {
+        this.form[formField] = selectedValue.trim()
+      }
       console.log(this.form)
     },
     getAdvancedForm(form, selectedTab) {
@@ -392,6 +418,8 @@ export default {
             return undefined
           } else if (key === 'mode') {
             return value.toLowerCase()
+          } else if (this.selectedTab === 'Ethernet' && key === 'hidden') {
+            return undefined
           } else {
             if (typeof value === 'string' && value.includes('(')) {
               return value.replace(/ *\([^)]*\) */g, '').toLowerCase()
