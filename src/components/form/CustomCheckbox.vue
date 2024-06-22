@@ -71,7 +71,7 @@ export default {
   }
   .pretty.p-switch .state label:after {
     background-color: rgba(20, 18, 31, 1) !important;
-    top: rem(-3px);
+    top: -12%;
   }
   .pretty.p-switch.p-fill input:checked ~ .state:before {
     background-color: rgba(0, 113, 226, 1) !important;
