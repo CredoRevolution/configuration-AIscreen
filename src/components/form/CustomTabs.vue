@@ -4,7 +4,7 @@
     :class="{ error: this.showError }"
     @click="resetValidation"
   >
-    <div class="main-screen__form-switch-slider"></div>
+    <div class="main-screen__form-switch-slider" ref="slider"></div>
     <div
       class="main-screen__form-switch-btn"
       @click="makeActive"
@@ -39,6 +39,7 @@ export default {
   data() {
     return {
       showError: false,
+      alreadyActive: false,
     }
   },
   validations: {
@@ -158,9 +159,19 @@ export default {
       }
       if (e) {
         this.$emit('getDataTabs', e)
-      } else {
-        console.error('Invalid event or textContent')
       }
+    },
+    activateTabs() {
+      this.$nextTick(() => {
+        if (!this.alreadyActive) {
+          this.$refs.slider.style.transition = 'none'
+          this.$refs.tabs[0].click()
+          this.alreadyActive = true
+          setTimeout(() => {
+            this.$refs.slider.style.transition = 'all 0.3s ease'
+          }, 300)
+        }
+      })
     },
   },
   mounted() {

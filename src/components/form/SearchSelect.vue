@@ -85,11 +85,26 @@ export default {
       type: Array,
       required: false,
     },
+    required: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   validations: {
     value: {
-      required,
-      mustBeSelected,
+      required(value) {
+        if (!this.required) {
+          return true
+        }
+        return !!value
+      },
+      mustBeSelected(value) {
+        if (this.required) {
+          return mustBeSelected(value, this)
+        }
+        return true
+      },
     },
   },
 
@@ -113,8 +128,9 @@ export default {
       this.active = true
     },
     resetValidation() {
-      this.showError = false
       this.$v.$reset()
+      this.isValid = false
+      this.showError = false
     },
     nameWithLang({ name }) {
       return `${name}`
@@ -125,7 +141,7 @@ export default {
     checkState() {
       if (this.formField && this.value.name) {
         this.$emit('getData', this.formPlace, this.formField, this.value.name)
-        console.log('вернулись данные с именем поля ' + this.formField)
+
         return
       }
       if (this.value.name) {
@@ -152,12 +168,10 @@ export default {
           list.style.overflowY = 'auto'
           list.style.maxHeight = '300px'
           if (selectedIndex !== -1) {
-            console.log('есть совпадение', selectedIndex)
             const listItemSelected = listItems[selectedIndex]
             const listItemSelectedTop =
               listItemSelected.offsetTop - list.offsetTop
             list.scrollTop = listItemSelectedTop
-            console.log(list.scrollTop, listItemSelectedTop)
           }
         }
       })

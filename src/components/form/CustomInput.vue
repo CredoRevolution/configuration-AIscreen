@@ -19,14 +19,15 @@
       :class="[
         'main-screen__form-input',
         'main-screen__form-item-warnings',
-        $v.name.$error ? 'error' : '',
+        $v.name.$error && showError ? 'error' : '',
         deletable ? 'deletable' : '',
         file ? 'file' : '',
         hidden ? 'password' : '',
         !$v.name.$error && $v.name.$model ? 'valid' : '',
       ]"
       :readonly="file"
-      required
+      :required="required"
+      :ipAddress="ipAddress"
       v-model.trim="name"
       @click="
         resetValidation()
@@ -65,11 +66,18 @@
     <div class="error-message" v-if="showError && !$v.name.minLength && !phone">
       Name must have at least {{ $v.name.$params.minLength.min }} letters.
     </div>
+
     <div class="error-message" v-if="showError && !$v.name.required && !phone">
       {{ defaultErrorText }}
     </div>
     <div class="error-message" v-if="showError && !$v.name.phoneCheck && phone">
       Please enter a valid phone number
+    </div>
+    <div
+      class="error-message"
+      v-if="showError && !$v.name.ipAddress && ipAddress"
+    >
+      Please enter a valid IP address
     </div>
   </div>
 </template>
@@ -119,6 +127,16 @@ export default {
       type: String,
       required: true,
     },
+    required: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    ipAddress: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -140,8 +158,22 @@ export default {
           /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/
         return regex.test(value)
       },
-      required,
-      minLength: minLength(5),
+      required(value) {
+        if (!this.required) {
+          return true
+        }
+        return !!value
+      },
+      minLength: minLength(3),
+      ipAddress(value) {
+        if (!this.ipAddress) {
+          return true
+        }
+        if (value === '') return true
+        const regex =
+          /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$/
+        return regex.test(value)
+      },
     },
   },
   mounted() {
@@ -163,6 +195,7 @@ export default {
     },
     deleteThisInput() {
       this.$refs.inputWrapper.remove()
+      this.$emit('getData', this.formPlace, this.formField, null)
     },
 
     resetValidation() {
@@ -181,7 +214,6 @@ export default {
           reader.onload = async (event) => {
             const base64String = await this.compress(event.target.result)
             this.baseFile = base64String
-            console.log(this.baseFile)
             this.$emit('getData', this.formPlace, this.formField, this.baseFile)
             this.name = file.name
           }
@@ -196,7 +228,6 @@ export default {
       return btoa(String.fromCharCode.apply(null, new Uint8Array(compressed)))
     },
     focus() {
-      console.log('called')
       if (this.name === '') {
         this.active = false
       } else {
@@ -219,11 +250,10 @@ export default {
     sendData() {
       this.checkValidation()
       if (this.baseFile) {
-        console.log(this.baseFile)
       }
       if (this.formField) {
         this.$emit('getData', this.formPlace, this.formField, this.name)
-        console.log('вернулись данные с именем поля ' + this.formField)
+
         return
       }
       this.$emit('getData', this.placeholderText, this.name)
@@ -416,4 +446,10 @@ export default {
 //   }
 // }
 //
+
+@media (max-width: 670px) {
+  .input-wrapper.deletable {
+    flex-wrap: nowrap;
+  }
+}
 </style>

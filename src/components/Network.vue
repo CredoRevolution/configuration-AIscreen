@@ -7,28 +7,39 @@
         :dataNeeded="true"
         ref="validation1"
       />
-      <template v-if="selectedTab == 'Wi-Fi'">
+      <template>
         <CustomInput
+          v-show="selectedTab === 'Wi-Fi'"
           :placeholderText="'Network name (SSID)'"
           :defaultErrorText="'Network name (SSID) is required'"
           :formField="'ssid'"
           :formPlace="['network', 'wifi']"
           :inputName="'ssid'"
+          :required="selectedTab === 'Wi-Fi'"
           @getData="getData"
           ref="validation2"
         />
         <SearchSelect
+          v-show="selectedTab === 'Wi-Fi'"
           :optionsCount="authentificationMethods"
           :search="false"
           :defaultText="'Authentification'"
           :defaultErrorText="'Authentification is required'"
           :form-place="['network', 'wifi']"
           :formField="'Authentification'"
+          :required="selectedTab === 'Wi-Fi'"
           @getData="getData"
           ref="validation3"
         />
         <CustomInput
-          v-if="form.network.wifi.Authentification === 'Basic (WPA2 Personal)'"
+          v-show="
+            form.network.wifi.Authentification === 'Basic (WPA2 Personal)' &&
+            selectedTab === 'Wi-Fi'
+          "
+          :required="
+            form.network.wifi.Authentification === 'Basic (WPA2 Personal)' &&
+            selectedTab === 'Wi-Fi'
+          "
           :placeholderText="'Password'"
           :defaultErrorText="'Password is required'"
           :formField="'password'"
@@ -39,9 +50,13 @@
           ref="validation4"
         />
         <SearchSelect
-          v-if="
+          v-show="
             form.network.wifi.Authentification ===
-            'Enterprise (WPA2 Enterprise)'
+              'Enterprise (WPA2 Enterprise)' && selectedTab === 'Wi-Fi'
+          "
+          :required="
+            form.network.wifi.Authentification ===
+              'Enterprise (WPA2 Enterprise)' && selectedTab === 'Wi-Fi'
           "
           :optionsCount="security"
           :search="false"
@@ -53,14 +68,20 @@
           @getData="getData"
           ref="validation5"
         />
-        <template
-          v-if="
-            form.network.wifi.enterprise.mode == 'TLS' &&
-            form.network.wifi.Authentification == 'Enterprise (WPA2 Enterprise)'
-          "
-          ref="TLS"
-        >
+        <template ref="TLS">
           <CustomInput
+            v-show="
+              form.network.wifi.enterprise.mode == 'TLS' &&
+              form.network.wifi.Authentification ==
+                'Enterprise (WPA2 Enterprise)' &&
+              selectedTab === 'Wi-Fi'
+            "
+            :required="
+              form.network.wifi.enterprise.mode == 'TLS' &&
+              form.network.wifi.Authentification ==
+                'Enterprise (WPA2 Enterprise)' &&
+              selectedTab === 'Wi-Fi'
+            "
             :placeholderText="'CA Certificates'"
             :defaultErrorText="'CA certificates is required'"
             :file="true"
@@ -71,6 +92,18 @@
             ref="validation6"
           />
           <CustomInput
+            v-show="
+              form.network.wifi.enterprise.mode == 'TLS' &&
+              form.network.wifi.Authentification ==
+                'Enterprise (WPA2 Enterprise)' &&
+              selectedTab === 'Wi-Fi'
+            "
+            :required="
+              form.network.wifi.enterprise.mode == 'TLS' &&
+              form.network.wifi.Authentification ==
+                'Enterprise (WPA2 Enterprise)' &&
+              selectedTab === 'Wi-Fi'
+            "
             :placeholderText="'User Idenity'"
             :defaultErrorText="'User idenity is required'"
             :formField="'identity'"
@@ -80,6 +113,18 @@
             ref="validation7"
           />
           <CustomInput
+            v-show="
+              form.network.wifi.enterprise.mode == 'TLS' &&
+              form.network.wifi.Authentification ==
+                'Enterprise (WPA2 Enterprise)' &&
+              selectedTab === 'Wi-Fi'
+            "
+            :required="
+              form.network.wifi.enterprise.mode == 'TLS' &&
+              form.network.wifi.Authentification ==
+                'Enterprise (WPA2 Enterprise)' &&
+              selectedTab === 'Wi-Fi'
+            "
             :placeholderText="'User Private Key'"
             :defaultErrorText="'User private key is required'"
             :file="true"
@@ -90,6 +135,18 @@
             ref="validation8"
           />
           <CustomInput
+            v-show="
+              form.network.wifi.enterprise.mode == 'TLS' &&
+              form.network.wifi.Authentification ==
+                'Enterprise (WPA2 Enterprise)' &&
+              selectedTab === 'Wi-Fi'
+            "
+            :required="
+              form.network.wifi.enterprise.mode == 'TLS' &&
+              form.network.wifi.Authentification ==
+                'Enterprise (WPA2 Enterprise)' &&
+              selectedTab === 'Wi-Fi'
+            "
             :placeholderText="'User Private Key Password'"
             :defaultErrorText="'User private key password is required'"
             :formField="'private_key_password'"
@@ -99,6 +156,18 @@
             ref="validation9"
           />
           <CustomInput
+            v-show="
+              form.network.wifi.enterprise.mode == 'TLS' &&
+              form.network.wifi.Authentification ==
+                'Enterprise (WPA2 Enterprise)' &&
+              selectedTab === 'Wi-Fi'
+            "
+            :required="
+              form.network.wifi.enterprise.mode == 'TLS' &&
+              form.network.wifi.Authentification ==
+                'Enterprise (WPA2 Enterprise)' &&
+              selectedTab === 'Wi-Fi'
+            "
             :placeholderText="'User Certificate'"
             :defaultErrorText="'User certificate is required'"
             :file="true"
@@ -109,14 +178,20 @@
             ref="validation10"
           />
         </template>
-        <template
-          v-if="
-            form.network.wifi.enterprise.mode == 'PEAP' &&
-            form.network.wifi.Authentification == 'Enterprise (WPA2 Enterprise)'
-          "
-          ref="PEAP"
-        >
+        <template ref="PEAP">
           <CustomInput
+            v-show="
+              form.network.wifi.enterprise.mode == 'PEAP' &&
+              form.network.wifi.Authentification ==
+                'Enterprise (WPA2 Enterprise)' &&
+              selectedTab === 'Wi-Fi'
+            "
+            :required="
+              form.network.wifi.enterprise.mode == 'PEAP' &&
+              form.network.wifi.Authentification ==
+                'Enterprise (WPA2 Enterprise)' &&
+              selectedTab === 'Wi-Fi'
+            "
             :placeholderText="'CA Certificates'"
             :defaultErrorText="'CA certificates is required'"
             :file="true"
@@ -127,6 +202,18 @@
             ref="validation11"
           />
           <CustomInput
+            v-show="
+              form.network.wifi.enterprise.mode == 'PEAP' &&
+              form.network.wifi.Authentification ==
+                'Enterprise (WPA2 Enterprise)' &&
+              selectedTab === 'Wi-Fi'
+            "
+            :required="
+              form.network.wifi.enterprise.mode == 'PEAP' &&
+              form.network.wifi.Authentification ==
+                'Enterprise (WPA2 Enterprise)' &&
+              selectedTab === 'Wi-Fi'
+            "
             :placeholderText="'User Idenity'"
             :defaultErrorText="'User idenity is required'"
             :formField="'identity'"
@@ -136,6 +223,18 @@
             ref="validation12"
           />
           <CustomInput
+            v-show="
+              form.network.wifi.enterprise.mode == 'PEAP' &&
+              form.network.wifi.Authentification ==
+                'Enterprise (WPA2 Enterprise)' &&
+              selectedTab === 'Wi-Fi'
+            "
+            :required="
+              form.network.wifi.enterprise.mode == 'PEAP' &&
+              form.network.wifi.Authentification ==
+                'Enterprise (WPA2 Enterprise)' &&
+              selectedTab === 'Wi-Fi'
+            "
             :placeholderText="'User Password'"
             :defaultErrorText="'User password is required'"
             :hidden="true"
@@ -265,6 +364,7 @@ export default {
       readyJSON: {},
     }
   },
+
   methods: {
     downloadJSON() {
       if (this.checkAllValidations()) {
@@ -310,9 +410,7 @@ export default {
         }
       })
       if (this.$refs.advancedSettings.checkAllValidations()) {
-        console.log(this.validationCount, 'validations of', visibleValidations)
         if (this.validationCount === visibleValidations) {
-          console.log('validations passed')
           return true
         }
       }
@@ -324,33 +422,28 @@ export default {
           formObj = formObj[formPlace[i]]
         }
         if (typeof selectedValue === 'boolean') {
-          console.log('bool')
           formObj[formField] = selectedValue
         } else {
           formObj[formField] = selectedValue.trim()
         }
-        console.log(
-          'данные записаны в форму глубже',
-          formPlace + ' ' + formField
-        )
-        console.log(this.form)
+
         return
       }
       if (typeof selectedValue === 'boolean') {
-        console.log('bool')
         this.form[formField] = selectedValue
       } else {
         this.form[formField] = selectedValue.trim()
       }
-      console.log(this.form)
     },
     getAdvancedForm(form, selectedTab) {
+      if (selectedTab === null) {
+        return
+      }
       if (
         selectedTab &&
         selectedTab.trim() == 'IP Address' &&
         this.selectedTab == 'Ethernet'
       ) {
-        console.log('active ip adress')
         this.form.network.ethernet.ipv4 = {
           ...form.ipv4,
         }
@@ -360,7 +453,6 @@ export default {
         selectedTab.trim() == 'IP Address' &&
         this.selectedTab == 'Wi-Fi'
       ) {
-        console.log('active ip adress')
         this.form.network.wifi.ipv4 = {
           ...form.ipv4,
         }
@@ -393,14 +485,14 @@ export default {
     },
     getDataTabs(tab) {
       this.selectedTab = tab.textContent.trim()
-      console.log(this.selectedTab)
     },
     cleanForm() {
       const cleanedForm = JSON.parse(
         JSON.stringify(this.form, (key, value) =>
           value == null ||
           value === '' ||
-          (Array.isArray(value) && value.length === 0) ||
+          (Array.isArray(value) &&
+            value.filter((item) => item !== null).length === 0) ||
           (typeof value === 'object' &&
             value !== null &&
             Object.keys(value).length === 0)
@@ -418,10 +510,40 @@ export default {
             return undefined
           } else if (key === 'mode') {
             return value.toLowerCase()
+          } else if (this.selectedTab !== 'Wi-Fi' && key.startsWith('wifi')) {
+            return undefined
+          } else if (
+            this.form.network.wifi.Authentification !==
+              'Enterprise (WPA2 Enterprise)' &&
+            key === 'enterprise'
+          ) {
+            return undefined
+          } else if (
+            this.form.network.wifi.Authentification !==
+              'Basic (WPA2 Personal)' &&
+            key === 'password'
+          ) {
+            if (
+              this.form.network.wifi.Authentification ===
+                'Enterprise (WPA2 Enterprise)' &&
+              this.form.network.wifi.enterprise.mode === 'PEAP'
+            ) {
+              return value
+            }
+            return undefined
+          } else if (
+            this.form.network.wifi.enterprise.mode !== 'TLS' &&
+            (key === 'private_key' ||
+              key === 'private_key_password' ||
+              key === 'client_cert')
+          ) {
+            return undefined
           } else if (this.selectedTab === 'Ethernet' && key === 'hidden') {
             return undefined
           } else {
-            if (typeof value === 'string' && value.includes('(')) {
+            if (Array.isArray(value)) {
+              return value.filter((item) => item !== null)
+            } else if (typeof value === 'string' && value.includes('(')) {
               return value.replace(/ *\([^)]*\) */g, '').toLowerCase()
             } else {
               return value
@@ -456,7 +578,6 @@ export default {
       const blob = new Blob([preview], { type: 'text/html' })
       const url = URL.createObjectURL(blob)
       window.open(url, '_blank')
-      console.log(this.form)
     },
   },
   mounted() {

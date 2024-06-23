@@ -7,13 +7,17 @@
     >
       Advanced
     </div>
-    <div class="advanced-settings" v-if="active">
+    <div class="advanced-settings" v-show="active">
       <CustomTabs
         :tabs="CustomTabs"
         @getDataTabs="getDataTabs"
         :dataNeeded="true"
+        ref="customTabsAdvanced"
       />
-      <template v-if="selectedTab === 'IP Address'">
+      <div
+        class="advanced-settings__wrapper"
+        v-show="selectedTab === 'IP Address'"
+      >
         <SearchSelect
           :optionsCount="Options"
           :defaultText="'Option'"
@@ -30,6 +34,7 @@
           :formPlace="['ipv4']"
           :input-name="'IP'"
           :form-field="'address'"
+          :ipAddress="true"
           @getData="getData"
           ref="validation2"
         />
@@ -42,15 +47,17 @@
           :input-name="'gateway'"
           @getData="getData"
           ref="validation3"
+          :required="form.ipv4.address !== ''"
         />
-      </template>
-      <template v-if="selectedTab === 'DNS'">
+      </div>
+      <div class="advanced-settings__wrapper" v-show="selectedTab === 'DNS'">
         <CustomInput
           v-for="(adress, index) in serverIPAdressAmount"
           :key="index"
           :placeholderText="'Server IP Address'"
           :defaultErrorText="'Server IP address is required'"
           :formPlace="['dns']"
+          :ipAddress="true"
           :form-field="`${index}`"
           :input-name="'IP'"
           @getData="getData"
@@ -61,14 +68,15 @@
           Add more
           <img :src="require('@/assets/img/add.svg')" alt="add more" />
         </div>
-      </template>
-      <template v-if="selectedTab === 'Proxy'">
+      </div>
+      <div class="advanced-settings__wrapper" v-show="selectedTab === 'Proxy'">
         <div class="proxy-wrapper">
           <CustomInput
             :placeholderText="'Host'"
             :defaultErrorText="'Host is required'"
             :formPlace="['proxy', 'server']"
             :formField="'address'"
+            :required="form.proxy.server.port !== ''"
             :input-name="'host'"
             @getData="getData"
             ref="validation5"
@@ -79,12 +87,13 @@
             :formPlace="['proxy', 'server']"
             :formField="'port'"
             :input-name="'port'"
+            :required="form.proxy.server.address !== ''"
             @getData="getData"
             ref="validation6"
           />
         </div>
-      </template>
-      <template v-if="selectedTab === 'NTP'">
+      </div>
+      <div class="advanced-settings__wrapper" v-show="selectedTab === 'NTP'">
         <CustomInput
           v-for="(adress, index) in NTPAmount"
           :key="index"
@@ -101,8 +110,11 @@
           Add more
           <img :src="require('@/assets/img/add.svg')" alt="add more" />
         </div>
-      </template>
-      <template v-if="selectedTab === 'Trusted Site’s Certificates'">
+      </div>
+      <div
+        class="advanced-settings__wrapper"
+        v-show="selectedTab === 'Trusted Site’s Certificates'"
+      >
         <CustomInput
           v-for="(adress, index) in SitesCertificatesAmount"
           :key="index"
@@ -120,7 +132,7 @@
           Add more
           <img :src="require('@/assets/img/add.svg')" alt="add more" />
         </div>
-      </template>
+      </div>
     </div>
   </div>
 </template>
@@ -147,7 +159,7 @@ export default {
         ipv4: {
           method: '',
           gateway: '',
-          adress: '',
+          address: '',
         },
         dns: [],
         proxy: {
@@ -170,11 +182,11 @@ export default {
       if (this.$refs.advancedSettings) {
         this.active = !this.active
       }
+      this.$refs.customTabsAdvanced.activateTabs()
     },
     getDataTabs(tab) {
       if (tab) {
         this.selectedTab = tab.textContent.trim()
-        console.log(this.selectedTab)
       }
     },
     getData(formPlace, formField, selectedValue) {
@@ -183,11 +195,20 @@ export default {
         for (let i = 0; i < formPlace.length; i++) {
           formObj = formObj[formPlace[i]]
         }
-        formObj[formField] = selectedValue.trim()
+        if (selectedValue === null) {
+          delete formObj[formField]
+        } else {
+          formObj[formField] = selectedValue.trim()
+        }
+
         this.$emit('sendAdvancedForm', this.form, this.selectedTab)
         return
       }
-      this.form[formField] = selectedValue.trim()
+      if (selectedValue === null) {
+        delete this.form[formField]
+      } else {
+        this.form[formField] = selectedValue.trim()
+      }
       this.$emit('sendAdvancedForm', this.form, this.selectedTab)
     },
     checkAllValidations() {
@@ -224,12 +245,16 @@ export default {
           }
         }
       })
-      console.log(this.validationCount, 'validations of', visibleValidations)
+
       if (this.validationCount === visibleValidations) {
-        console.log('validations passed advanced')
         return true
       }
     },
+  },
+  mounted() {
+    setTimeout(() => {
+      this.$refs.customTabsAdvanced.$refs.tabs[0].click()
+    })
   },
 }
 </script>
@@ -237,6 +262,12 @@ export default {
 <style lang="scss" scoped>
 @function rem($px) {
   @return ($px / 16px) + rem;
+}
+.advanced-settings__wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: rem(17px);
+  margin-bottom: rem(17px);
 }
 .advanced-btn {
   margin: rem(17px) 0 rem(17px) 0;
@@ -310,7 +341,7 @@ export default {
   gap: rem(12px);
   justify-content: space-between;
   flex-wrap: nowrap;
-  align-items: center;
+  align-items: flex-start;
   .input-wrapper {
     &:nth-child(1) {
       width: 80%;
