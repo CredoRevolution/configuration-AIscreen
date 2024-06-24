@@ -451,5 +451,26 @@ export default {
   .input-wrapper.deletable {
     flex-wrap: nowrap;
   }
+  .input-wrapper.file.deletable::after {
+    right: 12.5%;
+  }
+}
+
+@media (max-width: 520px) {
+  .input-wrapper.file.deletable::after {
+    right: 14.5%;
+  }
+  .input-wrapper.file label {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 60%;
+  }
+}
+
+@media (max-width: 400px) {
+  .input-wrapper.file.deletable::after {
+    right: 17.5%;
+  }
 }
 </style>

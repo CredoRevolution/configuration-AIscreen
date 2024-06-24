@@ -43,4 +43,15 @@ body {
   color: #14121f;
   margin-bottom: rem(31px);
 }
+
+@media (max-width: 768px) {
+  .main-screen__title {
+    font-size: rem(30px);
+    line-height: rem(36px);
+    margin-bottom: rem(20px);
+  }
+  #app {
+    padding: 5vh 1vh;
+  }
+}
 </style>

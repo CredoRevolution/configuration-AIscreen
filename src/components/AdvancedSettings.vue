@@ -348,4 +348,12 @@ export default {
     }
   }
 }
+
+@media (max-width: 768px) {
+  .advanced-btn {
+    font-size: rem(23px);
+    gap: rem(10px);
+    line-height: rem(26px);
+  }
+}
 </style>

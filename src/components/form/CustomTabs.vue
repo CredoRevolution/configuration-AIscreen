@@ -1,7 +1,10 @@
 <template>
   <div
     class="main-screen__form-switch main-screen__form-item-warnings"
-    :class="{ error: this.showError }"
+    :class="{
+      error: this.showError,
+      widthAuto: tabs !== null && tabs !== undefined && tabs.length > 2,
+    }"
     @click="resetValidation"
   >
     <div class="main-screen__form-switch-slider" ref="slider"></div>
@@ -270,9 +273,21 @@ export default {
     }
   }
 }
-@media (max-width: 768px) {
-  .custom-tabs {
-    display: none;
+
+@media (max-width: 600px) {
+  .main-screen__form-switch {
+    // flex-wrap: wrap;
+  }
+  .main-screen__form-switch.widthAuto {
+    flex-wrap: wrap;
+    justify-content: space-around;
+    border-radius: rem(30px);
+    .main-screen__form-switch-slider {
+      border-radius: rem(30px);
+    }
+    .main-screen__form-switch-btn {
+      width: auto;
+    }
   }
 }
 </style>

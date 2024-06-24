@@ -677,4 +677,16 @@ export default {
     }
   }
 }
+
+@media (max-width: 768px) {
+  .main-wrapper {
+    .main-wrapper__form {
+      padding: rem(20px);
+      .main-btn {
+        font-size: rem(19px);
+        line-height: rem(23px);
+      }
+    }
+  }
+}
 </style>
